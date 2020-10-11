@@ -1,5 +1,5 @@
 # sprite_add_gif
-Load animated GIFs as sprites in GameMaker Studio 2.3+ games
+
 **Quick links:** [itch.io page](https://yellowafterlife.itch.io/gamemaker-sprite-add-gif)  
 **Supported platforms:** All (see notes below)  
 **Supported versions:** GameMaker Studio≥2.3
