@@ -9,10 +9,13 @@ if (gif_sprite != -1) {
 		gif_subimg = (gif_subimg + 1) % gif_frames;
 	}
 	//
-	draw_sprite(gif_sprite, gif_subimg,
-		(_width - sprite_get_width(gif_sprite)) div 2,
-		(_height - sprite_get_height(gif_sprite)) div 2,
-	);
+	var gif_width = sprite_get_width(gif_sprite);
+	var gif_height = sprite_get_height(gif_sprite);
+	var gif_scale = max(1, min(_width div gif_width, (_height - string_height("Q") * 2) div gif_height));
+	var gif_x = (_width - gif_width * gif_scale) div 2;
+	var gif_y = (_height - gif_height * gif_scale) div 2;
+	draw_sprite_ext(gif_sprite, gif_subimg, gif_x, gif_y, gif_scale, gif_scale, 0, c_white, 1);
+	draw_rectangle(gif_x - 1.5, gif_y - 1.5, gif_x + gif_width * gif_scale + .5, gif_y + gif_height * gif_scale + .5, 1);
 	//
 	if (mouse_check_button_pressed(mb_right)) {
 		sprite_save_strip(gif_sprite, "sprite.png");
