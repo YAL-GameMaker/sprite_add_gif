@@ -101,7 +101,12 @@ import haxe.io.BytesInput;
 	@:expose("sprite_add_gif_buffer") static function addBuffer(buf:Buffer, xorig:Int, yorig:Int, ?delays:Array<Int>) {
 		var gif = new Gif();
 		gif.read(buf);
+		//
 		var sf = new Surface(gif.width, gif.height);
+		sf.setTarget();
+		Draw.clearAlpha(Color.white, 0);
+		sf.resetTarget();
+		//
 		var restoreBuf = Buffer.defValue;
 		var spr = Sprite.defValue;
 		//
