@@ -1,4 +1,4 @@
-// Generated at 2020-10-11 02:17:25 (315ms) for vnull+
+// Generated at 2020-10-11 11:48:54 (313ms) for vnull+
 #region metatype
 globalvar gif_std_haxe_type_markerValue; gif_std_haxe_type_markerValue = [];
 globalvar mt_Gif; mt_Gif = new gif_std_haxe_class(-1, "Gif");
@@ -11,8 +11,6 @@ globalvar mt_format_gif_Version; mt_format_gif_Version = new gif_std_haxe_enum(-
 globalvar mt_format_gif_DisposalMethod; mt_format_gif_DisposalMethod = new gif_std_haxe_enum(-1, "format_gif_DisposalMethod");
 globalvar mt_gif_std_haxe_class; mt_gif_std_haxe_class = new gif_std_haxe_class(-1, "gif_std_haxe_class");
 globalvar mt_gif_std_haxe_enum; mt_gif_std_haxe_enum = new gif_std_haxe_class(-1, "gif_std_haxe_enum");
-globalvar mt_haxe_ds_List; mt_haxe_ds_List = new gif_std_haxe_class(-1, "haxe_ds_List");
-globalvar mt_haxe_ds__List_ListNode; mt_haxe_ds__List_ListNode = new gif_std_haxe_class(-1, "haxe_ds__List_ListNode");
 globalvar mt_gif_std_haxe_io_Bytes; mt_gif_std_haxe_io_Bytes = new gif_std_haxe_class(-1, "gif_std_haxe_io_Bytes");
 globalvar mt_haxe_io_Input; mt_haxe_io_Input = new gif_std_haxe_class(-1, "haxe_io_Input");
 globalvar mt_haxe_io_BytesInput; mt_haxe_io_BytesInput = new gif_std_haxe_class(-1, "haxe_io_BytesInput");
@@ -36,8 +34,9 @@ function Gif() constructor {
 	static height = undefined;
 	static loops = undefined;
 	static destroy = function() {
+		var this = self;
 		var __g = 0;
-		var __g1 = self.frames;
+		var __g1 = this.frames;
 		while (__g < array_length(__g1)) {
 			var _frame = __g1[__g];
 			__g++;
@@ -45,6 +44,7 @@ function Gif() constructor {
 		}
 	}
 	static read = function(_gif_buffer) {
+		var this = self;
 		var _n = buffer_get_size(_gif_buffer);
 		var _bytes = new gif_std_haxe_io_Bytes(array_create(_n, 0));
 		var _i = 0;
@@ -54,17 +54,17 @@ function Gif() constructor {
 		}
 		var _input = new haxe_io_BytesInput(_bytes, 0, _n);
 		var _q = new GifReader(_input).read();
-		self.width = _q.logicalScreenDescriptor.width;
-		self.height = _q.logicalScreenDescriptor.height;
+		this.width = _q.logicalScreenDescriptor.width;
+		this.height = _q.logicalScreenDescriptor.height;
 		var _gce = undefined;
 		var _globalColorTable = undefined;
 		if (_q.globalColorTable != undefined) _globalColorTable = _Gif_GifTools_colorTableToVector(_q.globalColorTable, _q.logicalScreenDescriptor.globalColorTableSize);
 		var __break = false;
-		var __g2_head = _q.blocks.h;
-		while (__g2_head != undefined) {
-			var _val = __g2_head.item;
-			__g2_head = __g2_head.next;
-			var _block = _val;
+		var __g = 0;
+		var __g1 = _q.blocks;
+		while (__g < array_length(__g1)) {
+			var _block = __g1[__g];
+			__g++;
 			switch (_block.__enumIndex__/* format_gif_Block */) {
 				case 0/* BFrame */:
 					var _f = _block.frame;
@@ -86,7 +86,7 @@ function Gif() constructor {
 					if (_f.colorTable != undefined) _colorTable = _Gif_GifTools_colorTableToVector(_f.colorTable, _f.localColorTableSize);
 					var _buf = buffer_create(_f.width * _f.height * 4, buffer_fixed, 1);
 					var _i = 0;
-					for (var __g1 = array_length(_f.pixels.b); _i < __g1; _i++) {
+					for (var __g3 = array_length(_f.pixels.b); _i < __g3; _i++) {
 						var _col = _f.pixels.b[_i];
 						if (_col == _transparentIndex) buffer_write(_buf, buffer_s32, 0); else buffer_write(_buf, buffer_s32, _colorTable[_col]);
 					}
@@ -95,19 +95,19 @@ function Gif() constructor {
 					gif_std_gml_io__Buffer_BufferImpl_setSurface(_buf, _sf, 0);
 					_gf.surface = _sf;
 					_gce = undefined;
-					gif_std_gml_internal_ArrayImpl_push(self.frames, _gf);
+					gif_std_gml_internal_ArrayImpl_push(this.frames, _gf);
 					break;
 				case 1/* BExtension */:
-					var __g2 = _block.extension;
-					switch (__g2.__enumIndex__/* format_gif_Extension */) {
+					var __g4 = _block.extension;
+					switch (__g4.__enumIndex__/* format_gif_Extension */) {
 						case 3/* EApplicationExtension */:
-							var __g3 = __g2.ext;
-							if (__g3.__enumIndex__/* format_gif_ApplicationExtension */ == 0/* AENetscapeLooping */) {
-								var _n = __g3.loops;
-								self.loops = _n;
+							var __g5 = __g4.ext;
+							if (__g5.__enumIndex__/* format_gif_ApplicationExtension */ == 0/* AENetscapeLooping */) {
+								var _n = __g5.loops;
+								this.loops = _n;
 							}
 							break;
-						case 0/* EGraphicControl */: _gce = __g2.gce; break;
+						case 0/* EGraphicControl */: _gce = __g4.gce; break;
 					}
 					break;
 				case 2/* BEOF */: __break = true; break;
@@ -115,10 +115,11 @@ function Gif() constructor {
 			if (__break) break;
 		}
 	}
-	self.loops = -1;
-	self.height = 0;
-	self.width = 0;
-	self.frames = [];
+	var this = self;
+	this.loops = -1;
+	this.height = 0;
+	this.width = 0;
+	this.frames = [];
 	static __class__ = mt_Gif;
 }
 mt_Gif.i_constructor = Gif;
@@ -203,11 +204,13 @@ function GifFrame() constructor {
 	static height = undefined;
 	static disposalMethod = undefined;
 	static destroy = function() {
-		if (surface_exists(self.surface)) surface_free(self.surface);
-		buffer_delete(self.buffer);
+		var this = self;
+		if (surface_exists(this.surface)) surface_free(this.surface);
+		buffer_delete(this.buffer);
 	}
-	self.disposalMethod = 0;
-	self.delay = 0;
+	var this = self;
+	this.disposalMethod = 0;
+	this.delay = 0;
 	static __class__ = mt_GifFrame;
 }
 mt_GifFrame.i_constructor = GifFrame;
@@ -241,24 +244,25 @@ function _Gif_GifTools_colorTableToVector(_pal, _num) {
 function GifReader(_i) constructor {
 	static i = undefined;
 	static read = function() {
+		var this = self;
 		var _b = 71;
-		if (self.i.readByte() != _b) throw string("Invalid header");
+		if (this.i.readByte() != _b) throw string("Invalid header");
 		var _b = 73;
-		if (self.i.readByte() != _b) throw string("Invalid header");
+		if (this.i.readByte() != _b) throw string("Invalid header");
 		var _b = 70;
-		if (self.i.readByte() != _b) throw string("Invalid header");
-		var _gifVer = self.i.readString(3);
+		if (this.i.readByte() != _b) throw string("Invalid header");
+		var _gifVer = this.i.readString(3);
 		var _version = format_gif_Version_GIF89a;
 		switch (_gifVer) {
 			case "87a": _version = format_gif_Version_GIF87a; break;
 			case "89a": _version = format_gif_Version_GIF89a; break;
 			default: _version = format_gif_Version_Unknown(_gifVer);
 		}
-		var _width = self.i.readUInt16();
-		var _height = self.i.readUInt16();
-		var _packedField = self.i.readByte();
-		var _bgIndex = self.i.readByte();
-		var _pixelAspectRatio = self.i.readByte();
+		var _width = this.i.readUInt16();
+		var _height = this.i.readUInt16();
+		var _packedField = this.i.readByte();
+		var _bgIndex = this.i.readByte();
+		var _pixelAspectRatio = this.i.readByte();
 		if (_pixelAspectRatio != 0) _pixelAspectRatio = (_pixelAspectRatio + 15) / 64; else _pixelAspectRatio = 1;
 		var _lsd = {
 			width: _width,
@@ -271,11 +275,11 @@ function GifReader(_i) constructor {
 			pixelAspectRatio: _pixelAspectRatio
 		}
 		var _gct = undefined;
-		if (_lsd.hasGlobalColorTable) _gct = self.readColorTable(_lsd.globalColorTableSize);
-		var _blocks = new haxe_ds_List();
+		if (_lsd.hasGlobalColorTable) _gct = this.readColorTable(_lsd.globalColorTableSize);
+		var _blocks = [];
 		while (true) {
-			var _b = self.readBlock();
-			_blocks.add(_b);
+			var _b = this.readBlock();
+			gif_std_gml_internal_ArrayImpl_push(_blocks, _b);
 			if (_b == format_gif_Block_BEOF) break;
 		}
 		return {
@@ -286,26 +290,28 @@ function GifReader(_i) constructor {
 		}
 	}
 	static readBlock = function() {
-		var _blockID = self.i.readByte();
+		var this = self;
+		var _blockID = this.i.readByte();
 		switch (_blockID) {
-			case 44: return self.readImage();
-			case 33: return self.readExtension();
+			case 44: return this.readImage();
+			case 33: return this.readExtension();
 			case 59: return format_gif_Block_BEOF;
 		}
 		return format_gif_Block_BEOF;
 	}
 	static readImage = function() {
-		var _x = self.i.readUInt16();
-		var _y = self.i.readUInt16();
-		var _width = self.i.readUInt16();
-		var _height = self.i.readUInt16();
-		var _packed = self.i.readByte();
+		var this = self;
+		var _x = this.i.readUInt16();
+		var _y = this.i.readUInt16();
+		var _width = this.i.readUInt16();
+		var _height = this.i.readUInt16();
+		var _packed = this.i.readByte();
 		var _localColorTable = (_packed & 128) == 128;
 		var _interlaced = (_packed & 64) == 64;
 		var _sorted = (_packed & 32) == 32;
 		var _localColorTableSize = (2 << (_packed & 7));
 		var _lct = undefined;
-		if (_localColorTable) _lct = self.readColorTable(_localColorTableSize);
+		if (_localColorTable) _lct = this.readColorTable(_localColorTableSize);
 		return format_gif_Block_BFrame({
 			x: _x,
 			y: _y,
@@ -315,12 +321,13 @@ function GifReader(_i) constructor {
 			interlaced: _interlaced,
 			sorted: _sorted,
 			localColorTableSize: _localColorTableSize,
-			pixels: self.readPixels(_width, _height, _interlaced),
+			pixels: this.readPixels(_width, _height, _interlaced),
 			colorTable: _lct
 		});
 	}
 	static readPixels = function(_width, _height, _interlaced) {
-		var _input = self.i;
+		var this = self;
+		var _input = this.i;
 		var _pixelsCount = _width * _height;
 		var _pixels = new gif_std_haxe_io_Bytes(array_create(_pixelsCount, 0));
 		var _minCodeSize = _input.readByte();
@@ -399,15 +406,16 @@ function GifReader(_i) constructor {
 		}
 		if (_interlaced) {
 			var _buffer1 = new gif_std_haxe_io_Bytes(array_create(_pixelsCount, 0));
-			var _offset = self.deinterlace(_pixels, _buffer1, 8, 0, 0, _width, _height);
-			_offset = self.deinterlace(_pixels, _buffer1, 8, 4, _offset, _width, _height);
-			_offset = self.deinterlace(_pixels, _buffer1, 4, 2, _offset, _width, _height);
-			self.deinterlace(_pixels, _buffer1, 2, 1, _offset, _width, _height);
+			var _offset = this.deinterlace(_pixels, _buffer1, 8, 0, 0, _width, _height);
+			_offset = this.deinterlace(_pixels, _buffer1, 8, 4, _offset, _width, _height);
+			_offset = this.deinterlace(_pixels, _buffer1, 4, 2, _offset, _width, _height);
+			this.deinterlace(_pixels, _buffer1, 2, 1, _offset, _width, _height);
 			_pixels = _buffer1;
 		}
 		return _pixels;
 	}
 	static deinterlace = function(_input, _output, _step, _y, _offset, _width, _height) {
+		var this = self;
 		while (_y < _height) {
 			array_copy(_output.b, _y * _width, _input.b, _offset, _width);
 			_offset += _width;
@@ -416,11 +424,12 @@ function GifReader(_i) constructor {
 		return _offset;
 	}
 	static readExtension = function() {
-		var _subId = self.i.readByte();
+		var this = self;
+		var _subId = this.i.readByte();
 		switch (_subId) {
 			case 249:
-				if (self.i.readByte() != 4) throw string("Incorrect Graphic Control Extension block size!");
-				var _packed = self.i.readByte();
+				if (this.i.readByte() != 4) throw string("Incorrect Graphic Control Extension block size!");
+				var _packed = this.i.readByte();
 				var _disposalMethod;
 				switch ((_packed & 28) >> 2) {
 					case 2: _disposalMethod = format_gif_DisposalMethod_FILL_BACKGROUND; break;
@@ -429,30 +438,30 @@ function GifReader(_i) constructor {
 					case 0: _disposalMethod = format_gif_DisposalMethod_UNSPECIFIED; break;
 					default: _disposalMethod = format_gif_DisposalMethod_UNDEFINED(((_packed & 28) >> 2));
 				}
-				var _delay = self.i.readUInt16();
+				var _delay = this.i.readUInt16();
 				var _b = format_gif_Block_BExtension(format_gif_Extension_EGraphicControl({
 					disposalMethod: _disposalMethod,
 					userInput: (_packed & 2) == 2,
 					hasTransparentColor: (_packed & 1) == 1,
 					delay: _delay,
-					transparentIndex: self.i.readByte()
+					transparentIndex: this.i.readByte()
 				}));
-				self.i.readByte();
+				this.i.readByte();
 				return _b;
 			case 1:
-				if (self.i.readByte() != 12) throw string("Incorrect size of Plain Text Extension introducer block.");
-				var _textGridX = self.i.readUInt16();
-				var _textGridY = self.i.readUInt16();
-				var _textGridWidth = self.i.readUInt16();
-				var _textGridHeight = self.i.readUInt16();
-				var _charCellWidth = self.i.readByte();
-				var _charCellHeight = self.i.readByte();
-				var _textForegroundColorIndex = self.i.readByte();
-				var _textBackgroundColorIndex = self.i.readByte();
+				if (this.i.readByte() != 12) throw string("Incorrect size of Plain Text Extension introducer block.");
+				var _textGridX = this.i.readUInt16();
+				var _textGridY = this.i.readUInt16();
+				var _textGridWidth = this.i.readUInt16();
+				var _textGridHeight = this.i.readUInt16();
+				var _charCellWidth = this.i.readByte();
+				var _charCellHeight = this.i.readByte();
+				var _textForegroundColorIndex = this.i.readByte();
+				var _textBackgroundColorIndex = this.i.readByte();
 				var _buffer1 = new haxe_io_BytesOutput();
 				var _bytes = new gif_std_haxe_io_Bytes(array_create(255, 0));
-				for (var _len = self.i.readByte(); _len != 0; _len = self.i.readByte()) {
-					self.i.readBytes(_bytes, 0, _len);
+				for (var _len = this.i.readByte(); _len != 0; _len = this.i.readByte()) {
+					this.i.readBytes(_bytes, 0, _len);
 					_buffer1.writeBytes(_bytes, 0, _len);
 				}
 				_buffer1.flush();
@@ -473,8 +482,8 @@ function GifReader(_i) constructor {
 			case 254:
 				var _buffer1 = new haxe_io_BytesOutput();
 				var _bytes = new gif_std_haxe_io_Bytes(array_create(255, 0));
-				for (var _len = self.i.readByte(); _len != 0; _len = self.i.readByte()) {
-					self.i.readBytes(_bytes, 0, _len);
+				for (var _len = this.i.readByte(); _len != 0; _len = this.i.readByte()) {
+					this.i.readBytes(_bytes, 0, _len);
 					_buffer1.writeBytes(_bytes, 0, _len);
 				}
 				_buffer1.flush();
@@ -482,12 +491,12 @@ function GifReader(_i) constructor {
 				_buffer1.close();
 				var __this = _bytes;
 				return format_gif_Block_BExtension(format_gif_Extension_EComment(haxe_io__Bytes_BytesImpl_getString(__this.b, 0, array_length(__this.b))));
-			case 255: return self.readApplicationExtension();
+			case 255: return this.readApplicationExtension();
 			default:
 				var _buffer1 = new haxe_io_BytesOutput();
 				var _bytes = new gif_std_haxe_io_Bytes(array_create(255, 0));
-				for (var _len = self.i.readByte(); _len != 0; _len = self.i.readByte()) {
-					self.i.readBytes(_bytes, 0, _len);
+				for (var _len = this.i.readByte(); _len != 0; _len = this.i.readByte()) {
+					this.i.readBytes(_bytes, 0, _len);
 					_buffer1.writeBytes(_bytes, 0, _len);
 				}
 				_buffer1.flush();
@@ -497,13 +506,14 @@ function GifReader(_i) constructor {
 		}
 	}
 	static readApplicationExtension = function() {
-		if (self.i.readByte() != 11) throw string("Incorrect size of Application Extension introducer block.");
-		var _name = self.i.readString(8);
-		var _version = self.i.readString(3);
+		var this = self;
+		if (this.i.readByte() != 11) throw string("Incorrect size of Application Extension introducer block.");
+		var _name = this.i.readString(8);
+		var _version = this.i.readString(3);
 		var _buffer1 = new haxe_io_BytesOutput();
 		var _bytes = new gif_std_haxe_io_Bytes(array_create(255, 0));
-		for (var _len = self.i.readByte(); _len != 0; _len = self.i.readByte()) {
-			self.i.readBytes(_bytes, 0, _len);
+		for (var _len = this.i.readByte(); _len != 0; _len = this.i.readByte()) {
+			this.i.readBytes(_bytes, 0, _len);
 			_buffer1.writeBytes(_bytes, 0, _len);
 		}
 		_buffer1.flush();
@@ -514,19 +524,21 @@ function GifReader(_i) constructor {
 		return format_gif_Block_BExtension(format_gif_Extension_EApplicationExtension(format_gif_ApplicationExtension_AEUnknown(_name, _version, _data)));
 	}
 	static readColorTable = function(_size) {
+		var this = self;
 		_size *= 3;
 		var _output = new gif_std_haxe_io_Bytes(array_create(_size, 0));
 		for (var _c = 0; _c < _size; _c += 3) {
-			var _v = self.i.readByte();
+			var _v = this.i.readByte();
 			_output.b[@_c] = (_v & 255);
-			var _v1 = self.i.readByte();
+			var _v1 = this.i.readByte();
 			_output.b[@_c + 1] = (_v1 & 255);
-			var _v2 = self.i.readByte();
+			var _v2 = this.i.readByte();
 			_output.b[@_c + 2] = (_v2 & 255);
 		}
 		return _output;
 	}
-	self.i = _i;
+	var this = self;
+	this.i = _i;
 	_i.bigEndian = false;
 	static __class__ = mt_GifReader;
 }
@@ -819,10 +831,11 @@ function gif_std_haxe_class(_id, _name) constructor {
 	static marker = undefined;
 	static index = undefined;
 	static name = undefined;
-	self.superClass = undefined;
-	self.marker = gif_std_haxe_type_markerValue;
-	self.index = _id;
-	self.name = _name;
+	var this = self;
+	this.superClass = undefined;
+	this.marker = gif_std_haxe_type_markerValue;
+	this.index = _id;
+	this.name = _name;
 	static __class__ = "class";
 }
 mt_gif_std_haxe_class.i_constructor = gif_std_haxe_class;
@@ -836,11 +849,12 @@ function gif_std_haxe_enum(_id, _name, _constructors) constructor {
 	static marker = undefined;
 	static index = undefined;
 	static name = undefined;
+	var this = self;
 	if (false) throw argument[2];
-	self.marker = gif_std_haxe_type_markerValue;
-	self.index = _id;
-	self.name = _name;
-	self.constructors = _constructors;
+	this.marker = gif_std_haxe_type_markerValue;
+	this.index = _id;
+	this.name = _name;
+	this.constructors = _constructors;
 	static __class__ = "enum";
 }
 mt_gif_std_haxe_enum.i_constructor = gif_std_haxe_enum;
@@ -890,43 +904,12 @@ function gif_std_gml_io__Buffer_BufferImpl_getSetSurface_init(_fn) {
 
 #endregion
 
-#region haxe.ds.List
-
-function haxe_ds_List() constructor {
-	static h = undefined;
-	static q = undefined;
-	static length = undefined;
-	static add = function(_item) {
-		var _x = new haxe_ds__List_ListNode(_item, undefined);
-		if (self.h == undefined) self.h = _x; else self.q.next = _x;
-		self.q = _x;
-		self.length++;
-	}
-	self.length = 0;
-	static __class__ = mt_haxe_ds_List;
-}
-mt_haxe_ds_List.i_constructor = haxe_ds_List;
-
-#endregion
-
-#region haxe.ds._List.ListNode
-
-function haxe_ds__List_ListNode(_item, _next) constructor {
-	static item = undefined;
-	static next = undefined;
-	self.item = _item;
-	self.next = _next;
-	static __class__ = mt_haxe_ds__List_ListNode;
-}
-mt_haxe_ds__List_ListNode.i_constructor = haxe_ds__List_ListNode;
-
-#endregion
-
 #region gif_std.haxe.io.Bytes
 
 function gif_std_haxe_io_Bytes(_b) constructor {
 	static b = undefined;
-	self.b = _b;
+	var this = self;
+	this.b = _b;
 	static __class__ = mt_gif_std_haxe_io_Bytes;
 }
 mt_gif_std_haxe_io_Bytes.i_constructor = gif_std_haxe_io_Bytes;
@@ -951,8 +934,9 @@ function haxe_io__Bytes_BytesImpl_getString(_d, _pos, _len) {
 #region haxe.io.Input
 
 function haxe_io_Input_new() {
-	self.bigEndian = false;
-	self.dataPos = 0;
+	var this = self;
+	this.bigEndian = false;
+	this.dataPos = 0;
 }
 
 function haxe_io_Input() constructor {
@@ -970,39 +954,43 @@ function haxe_io_Input() constructor {
 mt_haxe_io_Input.i_constructor = haxe_io_Input;
 
 function haxe_io_Input_readByte() {
-	var _d = self.data;
-	return _d[self.dataPos++];
+	var this = self;
+	var _d = this.data;
+	return _d[this.dataPos++];
 }
 
 function haxe_io_Input_readUInt16() {
-	var _d = self.data;
-	var _p = self.dataPos;
+	var this = self;
+	var _d = this.data;
+	var _p = this.dataPos;
 	var _c1 = _d[_p++];
 	var _c2 = _d[_p++];
-	self.dataPos = _p;
-	if (self.bigEndian) return ((_c1 << 8) | _c2); else return (_c1 | (_c2 << 8));
+	this.dataPos = _p;
+	if (this.bigEndian) return ((_c1 << 8) | _c2); else return (_c1 | (_c2 << 8));
 }
 
 function haxe_io_Input_readBytes(_to, _pos, _len) {
-	var _start = self.dataPos;
-	var _avail = self.dataLen - _start;
+	var this = self;
+	var _start = this.dataPos;
+	var _avail = this.dataLen - _start;
 	if (_len > _avail) _len = _avail;
-	array_copy(_to.b, _pos, self.data, _start, _len);
-	self.dataPos = _start + _len;
+	array_copy(_to.b, _pos, this.data, _start, _len);
+	this.dataPos = _start + _len;
 	return _len;
 }
 
 function haxe_io_Input_readString(_count) {
-	var _pos = self.dataPos;
-	var _data = self.data;
-	var _maxLen = self.dataLen - _pos;
+	var this = self;
+	var _pos = this.dataPos;
+	var _data = this.data;
+	var _maxLen = this.dataLen - _pos;
 	if (_count > _maxLen) _count = _maxLen;
 	var _buf = haxe_io_Input_buffer;
 	buffer_seek(_buf, buffer_seek_start, 0);
 	repeat (_count) buffer_write(_buf, buffer_u8, _data[_pos++]);
 	buffer_write(_buf, buffer_u8, 0);
 	buffer_seek(_buf, buffer_seek_start, 0);
-	self.dataPos = _pos;
+	this.dataPos = _pos;
 	return buffer_read(_buf, buffer_string);
 }
 
@@ -1019,13 +1007,14 @@ function haxe_io_BytesInput(_sourceBytes, _sourcePos, _sourceLen) constructor {
 	static readUInt16 = method(undefined, haxe_io_Input_readUInt16);
 	static readBytes = method(undefined, haxe_io_Input_readBytes);
 	static readString = method(undefined, haxe_io_Input_readString);
+	var this = self;
 	if (_sourcePos == undefined) _sourcePos = 0;
 	if (false) throw argument[2];
-	method(self, haxe_io_Input_new)();
+	method(this, haxe_io_Input_new)();
 	if (_sourceLen == undefined) _sourceLen = array_length(_sourceBytes.b) - _sourcePos;
-	self.data = _sourceBytes.b;
-	self.dataPos = _sourcePos;
-	self.dataLen = _sourceLen;
+	this.data = _sourceBytes.b;
+	this.dataPos = _sourcePos;
+	this.dataLen = _sourceLen;
 	static __class__ = mt_haxe_io_BytesInput;
 }
 mt_haxe_io_BytesInput.i_constructor = haxe_io_BytesInput;
@@ -1035,9 +1024,10 @@ mt_haxe_io_BytesInput.i_constructor = haxe_io_BytesInput;
 #region haxe.io.Output
 
 function haxe_io_Output_new() {
-	self.dataLen = 32;
-	self.dataPos = 0;
-	self.data = array_create(32);
+	var this = self;
+	this.dataLen = 32;
+	this.dataPos = 0;
+	this.data = array_create(32);
 }
 
 function haxe_io_Output() constructor {
@@ -1053,19 +1043,22 @@ function haxe_io_Output() constructor {
 mt_haxe_io_Output.i_constructor = haxe_io_Output;
 
 function haxe_io_Output_flush() {
+	var this = self;
 	
 }
 
 function haxe_io_Output_close() {
+	var this = self;
 	
 }
 
 function haxe_io_Output_writeBytes(_b, _pos, _len) {
+	var this = self;
 	var _bd = _b.b;
-	var _p0 = self.dataPos;
+	var _p0 = this.dataPos;
 	var _p1 = _p0 + _len;
-	var _d = self.data;
-	var _dlen = self.dataLen;
+	var _d = this.data;
+	var _dlen = this.dataLen;
 	if (_p1 > _dlen) {
 		while (true) {
 			_dlen *= 2;
@@ -1073,10 +1066,10 @@ function haxe_io_Output_writeBytes(_b, _pos, _len) {
 		}
 		_dlen *= 2;
 		_d[@_dlen - 1] = 0;
-		self.dataLen = _dlen;
+		this.dataLen = _dlen;
 	}
 	array_copy(_d, _p0, _bd, _pos, _len);
-	self.dataPos = _p1;
+	this.dataPos = _p1;
 	return _len;
 }
 
@@ -1091,7 +1084,8 @@ function haxe_io_BytesOutput() constructor {
 	static flush = method(undefined, haxe_io_Output_flush);
 	static close = method(undefined, haxe_io_Output_close);
 	static writeBytes = method(undefined, haxe_io_Output_writeBytes);
-	method(self, haxe_io_Output_new)();
+	var this = self;
+	method(this, haxe_io_Output_new)();
 	static __class__ = mt_haxe_io_BytesOutput;
 }
 mt_haxe_io_BytesOutput.i_constructor = haxe_io_BytesOutput;

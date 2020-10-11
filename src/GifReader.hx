@@ -7,10 +7,11 @@ import haxe.io.BytesOutput;
 import haxe.io.Input;
 
 /**
- * Same as regular format.gif.Reader but I moved some literal expressions
- * into variables so that GML doesn't bork them up due to undefined order.
- * @author Yanrishatum, edited by YellowAfterlife
- */
+Same as regular format.gif.Reader but:
+- Some expressions split up into variables to avoid order of operation issues in GML
+- Replaced List with Array because that won't matter much for GML
+@author Yanrishatum, edited by YellowAfterlife
+**/
 class GifReader
 {
 
@@ -22,7 +23,7 @@ class GifReader
     i.bigEndian = false;
   }
   
-  public function read():Data
+  public function read():GifData
   {
     for (b in [71, 73, 70])
     {
@@ -62,12 +63,12 @@ class GifReader
     var gct:ColorTable = null;
     if (lsd.hasGlobalColorTable) gct = readColorTable(lsd.globalColorTableSize);
     
-    var blocks:List<Block> = new List();
+    var blocks:Array<Block> = [];
     
     while (true)
     {
       var b:Block = readBlock();
-      blocks.add(b);
+      blocks.push(b);
       if (b == Block.BEOF) break;
     }
     
@@ -355,4 +356,27 @@ class GifReader
     }
     return output;
   }
+}
+
+typedef GifData =
+{
+  /**
+   * Gif version. There is only 2 Gif version exists. 87a and 89a.
+   * 87a have less features and does not support any extensions.
+   * Unknown version is adviced to be interpreted as newest (89a) official version.
+   */
+  var version:Version;
+  /**
+   * Information about logical screen of Gif that provides basic information about Gif.
+   */
+  var logicalScreenDescriptor:LogicalScreenDescriptor;
+  /**
+   * Global color table used for Gif. Present only if Logical Screen Descriptor contained global color table flag.
+   * Note that this color table not always present since frames can contain local color tables that overrides global color table.
+   */
+  @:optional var globalColorTable:Null<ColorTable>;
+  /**
+   * List of Gif data blocks.
+   */
+  var blocks:Array<Block>;
 }
