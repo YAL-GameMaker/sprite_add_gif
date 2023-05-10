@@ -1,0 +1,2 @@
+// bok
+event_inherited();

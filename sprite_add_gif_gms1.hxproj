@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project version="2">
+  <!-- Output SWF options -->
+  <output>
+    <movie outputType="Application" />
+    <movie input="" />
+    <movie path="sprite_add_gif_gms1.gmx\scripts\gif_init.gml" />
+    <movie fps="0" />
+    <movie width="0" />
+    <movie height="0" />
+    <movie version="0" />
+    <movie minorVersion="0" />
+    <movie platform="JavaScript" />
+    <movie background="#FFFFFF" />
+  </output>
+  <!-- Other classes to be compiled into your SWF -->
+  <classpaths>
+    <class path="src" />
+  </classpaths>
+  <!-- Build options -->
+  <build>
+    <option directives="sf-std-package=gif_std&#xA;sfgml_dot_static=false&#xA;sfgml-no-code-doc&#xA;sf_no_opt_auto_var&#xA;sfgml_keep_this_self=force" />
+    <option flashStrict="False" />
+    <option noInlineOnDebug="False" />
+    <option mainClass="Gif" />
+    <option enabledebug="False" />
+    <option additional="-dce full&#xA;params-gms1.hxml" />
+  </build>
+  <!-- haxelib libraries -->
+  <haxelib>
+    <library name="sfhx" />
+    <library name="sfgml" />
+    <library name="format" />
+  </haxelib>
+  <!-- Class files to compile (other referenced classes will automatically be included) -->
+  <compileTargets>
+    <compile path="src\Main.hx" />
+    <compile path="src\Gif.hx" />
+  </compileTargets>
+  <!-- Paths to exclude from the Project Explorer tree -->
+  <hiddenPaths>
+    <hidden path="obj" />
+  </hiddenPaths>
+  <!-- Executed before build -->
+  <preBuildCommand />
+  <!-- Executed after build -->
+  <postBuildCommand alwaysRun="False" />
+  <!-- Other project options -->
+  <options>
+    <option showHiddenPaths="False" />
+    <option testMovie="OpenDocument" />
+    <option testMovieCommand="" />
+  </options>
+  <!-- Plugin storage -->
+  <storage />
+</project>

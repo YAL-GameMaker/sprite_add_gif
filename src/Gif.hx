@@ -31,8 +31,7 @@ import haxe.io.BytesInput;
 		var bytes = Bytes.alloc(n);
 		for (i in 0 ... n) bytes.set(i, gif_buffer.peekByte(i));
 		//
-		var input = new BytesInput(bytes, 0, n);
-		var q = (new GifReader(input)).read();
+		var q = (new GifReader(gif_buffer)).read();
 		width = q.logicalScreenDescriptor.width;
 		height = q.logicalScreenDescriptor.height;
 		var gce:GraphicControlExtension = null;
@@ -41,6 +40,18 @@ import haxe.io.BytesInput;
 			globalColorTable = GifTools.colorTableToVector(q.globalColorTable, q.logicalScreenDescriptor.globalColorTableSize);
 		}
 		var _break = false;
+		#if gif_legacy_plotter
+		var white1 = Gif.white1;
+		if (white1 == Sprite.defValue) {
+			var ws = new Surface(1, 1);
+			ws.setTarget();
+			Draw.clear(Color.white);
+			ws.resetTarget();
+			white1 = ws.toSprite(0, 0);
+			ws.destroy();
+			Gif.white1 = white1;
+		}
+		#end
 		for (block in q.blocks) {
 			switch (block) {
 				case BFrame(f): {
@@ -66,9 +77,36 @@ import haxe.io.BytesInput;
 					}
 					//
 					//trace([for (c in colorTable) StringTools.hex(c, 8)]);
+					var fWidth = f.width;
+					var fHeight = f.height;
+					var sf = new Surface(fWidth, fHeight);
+					var pxData = f.pixels.getData();
+					//var base = "frame" + frames.length;
+					
+					#if gif_legacy_plotter
+					sf.setTarget();
+					Draw.clearAlpha(Color.black, 0);
+					GPU.blendSimple = Add;
+					var y = 0;
+					var ind = 0;
+					for (_ in 0 ... fHeight) {
+						var x = 0;
+						for (_ in 0 ... fWidth) {
+							var col = pxData[ind++];
+							if (col != transparentIndex) {
+								var c32 = colorTable[col];
+								white1.drawExt(0, x, y, 1, 1, 0, colorTable[col], 1);
+							}
+							x += 1;
+						}
+						y += 1;
+					}
+					GPU.blendSimple = Normal;
+					sf.resetTarget();
+					#else
 					var buf = new Buffer(f.width * f.height * 4, Fixed, 1);
 					for (i in 0 ... f.pixels.length) {
-						var col = f.pixels.get(i);
+						var col = pxData[i];
 						if (col == transparentIndex) {
 							buf.writeInt(0);
 						} else {
@@ -77,10 +115,12 @@ import haxe.io.BytesInput;
 					}
 					gf.buffer = buf;
 					//
-					var sf = new Surface(f.width, f.height);
 					buf.setSurface(sf, 0);
+					//buf.save(base + ".bin");
+					#end
 					gf.surface = sf;
 					//
+					//sf.save(base + ".png");
 					gce = null;
 					frames.push(gf);
 				};
@@ -97,19 +137,11 @@ import haxe.io.BytesInput;
 		}
 	}
 	
+	#if gif_legacy_plotter
+	static var white1:Sprite = Sprite.defValue;
+	#end
 	static var white32:Sprite = Sprite.defValue;
 	@:expose("sprite_add_gif_buffer") static function addBuffer(buf:Buffer, xorig:Int, yorig:Int, ?delays:Array<Int>) {
-		var gif = new Gif();
-		gif.read(buf);
-		//
-		var sf = new Surface(gif.width, gif.height);
-		sf.setTarget();
-		Draw.clearAlpha(Color.white, 0);
-		sf.resetTarget();
-		//
-		var restoreBuf = Buffer.defValue;
-		var spr = Sprite.defValue;
-		//
 		var white32 = Gif.white32;
 		if (white32 == Sprite.defValue) {
 			var ws = new Surface(32, 32);
@@ -120,6 +152,17 @@ import haxe.io.BytesInput;
 			ws.destroy();
 			Gif.white32 = white32;
 		}
+		//
+		var gif = new Gif();
+		gif.read(buf);
+		//
+		var sf = new Surface(gif.width, gif.height);
+		sf.setTarget();
+		Draw.clearAlpha(Color.white, 0);
+		sf.resetTarget();
+		//
+		var restoreBuf = Buffer.defValue;
+		var spr = Sprite.defValue;
 		//
 		var _color = GPU.color;
 		var _alpha = GPU.alpha;
@@ -163,9 +206,11 @@ import haxe.io.BytesInput;
 			}
 		}
 		//
+		#if (sfgml_version >= "2.0")
 		if (firstDelay > 0) {
 			spr.setSpeed(100 / firstDelay, SpriteSpeedType.FramesPerSecond);
 		}
+		#end
 		//
 		GPU.color = _color;
 		GPU.alpha = _alpha;
@@ -190,7 +235,7 @@ import haxe.io.BytesInput;
 @:keep class GifFrame {
 	public var delay:Int = 0;
 	public var surface:Surface;
-	public var buffer:Buffer;
+	public var buffer:Buffer = Buffer.defValue;
 	public var x:Int;
 	public var y:Int;
 	public var width:Int;
@@ -201,14 +246,18 @@ import haxe.io.BytesInput;
 	}
 	public function destroy() {
 		if (Surface.isValid(surface)) surface.destroy();
-		buffer.destroy();
+		if (buffer != Buffer.defValue) buffer.destroy();
 	}
 }
 
 private class GifTools {
 	public static function colorTableToVector(pal:Bytes, num:Int):Vector<Int> {
 		var r:Int, g:Int, b:Int, p:Int = 0;
+		#if gif_legacy_plotter
+		var a = 0;
+		#else
 		var a = 255;
+		#end
 		var vec:Vector<Int> = new Vector(num);
 		for (i in 0 ... num) {
 			r = pal.get(p);

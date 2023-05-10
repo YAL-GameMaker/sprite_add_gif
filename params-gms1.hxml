@@ -1,0 +1,7 @@
+-D sfgml_main=gif_preinit
+-D sfgml_snake_case
+#-D sfgml_native_bytes
+-D sfgml_version=1.4.1804
+
+# plots pixels without buffer_set_surface_fix
+#-D gif_legacy_plotter
