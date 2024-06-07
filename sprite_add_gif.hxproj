@@ -19,12 +19,12 @@
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="sf-std-package=gif_std&#xA;sfgml_dot_static=false&#xA;sfgml-no-code-doc&#xA;sf_no_opt_auto_var&#xA;sfgml_keep_this_self=force" />
+    <option directives="" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="Gif" />
     <option enabledebug="False" />
-    <option additional="-dce full" />
+    <option additional="params.hxml&#xA;params-gms2.hxml" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

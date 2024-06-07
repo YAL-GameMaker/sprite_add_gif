@@ -2,7 +2,12 @@
     "builderSettings": {
         "runtimeVersion": null
     },
+    "indentWithTabs": true,
     "linterPrefs": {
         
-    }
+    },
+    "rawDirectories": [
+        ".",
+        "..\/export\/sprite_add_gif.dmd"
+    ]
 }

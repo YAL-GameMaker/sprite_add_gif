@@ -1,0 +1,6 @@
+--debug
+-cp src
+-js sprite_add_gif/scripts/GifHx/GifHx.yy._
+-main Gif
+-D sfgml_version=2022
+params.hxml

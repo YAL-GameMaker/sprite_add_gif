@@ -1,0 +1,6 @@
+--debug
+-cp src
+-js sprite_add_gif_gms1.gmx/scripts/gif_preinit.gml
+--cmd build-gms1-post.bat
+-main Gif
+params-gms1.hxml

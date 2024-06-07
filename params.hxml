@@ -1,0 +1,11 @@
+-lib sfhx
+-lib sfgml
+-lib format
+
+-D sf-std-package=gif_std
+-D sfgml_dot_static=false
+-D sfgml-no-code-doc
+-D sf_no_opt_auto_var
+#-D sfgml_keep_this_self=force
+-D sfgml_snake_case
+-dce full

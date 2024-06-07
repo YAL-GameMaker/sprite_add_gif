@@ -8,11 +8,14 @@ import haxe.io.BytesOutput;
 import haxe.io.Input;
 
 /**
-Same as regular format.gif.Reader but:
-- Some expressions split up into variables to avoid order of operation issues in GML
-- Replaced List with Array because that won't matter much for GML
-@author Yanrishatum, edited by YellowAfterlife
+	Structurally similar to the regular format.gif.Reader,
+	but edited for GameMaker specifics:
+	-	Buffer instead of Input (... should have made a BufferInput)
+	-	Re-arranged some expressions so that they don't produce dynamic objects
+	-	Array instead of List
+	@author Yanrishatum, edited by YellowAfterlife
 **/
+@:native("gif_raw_reader")
 class GifReader {
 	private var i:Buffer;
 	
@@ -36,7 +39,7 @@ class GifReader {
 		return buf.readString();
 	}
 	
-	public function read():GifData
+	public function read(instant:Bool):GifData
 	{
 		for (b in [71, 73, 70])
 		{
@@ -78,7 +81,7 @@ class GifReader {
 		
 		var blocks:Array<Block> = [];
 		
-		while (true)
+		if (instant) while (true)
 		{
 			var b:Block = readBlock();
 			blocks.push(b);
@@ -92,6 +95,12 @@ class GifReader {
 			globalColorTable: gct,
 			blocks: blocks
 		}
+	}
+	
+	public function readNext(blocks:Array<Block>) {
+		var b:Block = readBlock();
+		blocks.push(b);
+		return b;
 	}
 	
 	private function readBlock():Block
@@ -127,7 +136,7 @@ class GifReader {
 		var lct:ColorTable = null;
 		if (localColorTable) lct = readColorTable(localColorTableSize);
 		
-	var frame:Frame = {
+		var frame:Frame = {
 			x: x, 
 			y: y,
 			width: width,
@@ -140,7 +149,6 @@ class GifReader {
 			colorTable:lct
 		};
 		return Block.BFrame(frame);
-		
 	}
 	
 	private function readPixels(width:Int, height:Int, interlaced:Bool):Bytes
@@ -241,10 +249,11 @@ class GifReader {
 		if (interlaced)
 		{
 			var buffer:Bytes = Bytes.alloc(pixelsCount);
-			var offset:Int = deinterlace(pixels, buffer, 8, 0, 0     , width, height); // Every 8 line with start at 0
-					offset     = deinterlace(pixels, buffer, 8, 4, offset, width, height); // Every 8 line with start at 4
-					offset     = deinterlace(pixels, buffer, 4, 2, offset, width, height); // Every 4 line with start at 2
-											 deinterlace(pixels, buffer, 2, 1, offset, width, height); // Every 2 line with start at 1
+			var offset;
+			offset = deinterlace(pixels, buffer, 8, 0, 0     , width, height); // Every 8 line with start at 0
+			offset = deinterlace(pixels, buffer, 8, 4, offset, width, height); // Every 8 line with start at 4
+			offset = deinterlace(pixels, buffer, 4, 2, offset, width, height); // Every 4 line with start at 2
+			offset = deinterlace(pixels, buffer, 2, 1, offset, width, height); // Every 2 line with start at 1
 			pixels = buffer;
 		}
 		return pixels;
@@ -279,8 +288,8 @@ class GifReader {
 					case 3: DisposalMethod.RENDER_PREVIOUS;
 					default: DisposalMethod.UNDEFINED((packed & 28) >> 2);
 				};
-		var delay = i.readShortUnsigned();
-		var gcx:GraphicControlExtension = {
+				var delay = i.readShortUnsigned();
+				var gcx:GraphicControlExtension = {
 					disposalMethod:disposalMethod,
 					userInput: (packed & 2) == 2,
 					hasTransparentColor: (packed & 1) == 1,

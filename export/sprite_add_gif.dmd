@@ -1,0 +1,201 @@
+```set template default.html```
+```set title sprite_add_gif cheat sheet```
+```gmlapi fnames2```
+```set autoapi ext```
+```set intro
+This is a "cheat sheet" for the "sprite_add_gif" extension by YellowAfterlife.
+
+The extension can be found
+[on itch.io](https://yellowafterlife.itch.io/gamemaker-sprite-add-gif).
+
+The soure code can be found
+[on GitHub](https://github.com/YAL-GameMaker/sprite_add_gif).
+```
+#[Concepts]() {
+	#[Frame delays](frame-delays) {
+		Each frame of a GIF can have a different duration, measured in 1/100s of second.
+		
+		GameMaker does not currently support per-frame timings in dynamically loaded sprites,
+		so instead you can provide an array to be populated with per-frame delays
+		and then use that for accurate playback (see the demo project).
+	}
+	#[Frame sprites](frame-sprites) {
+		Turns out that the more sub-images your sprite has,
+		the longer it takes to add new ones to it!\
+		(likely because GameMaker tries to fit them on a texture page).
+		
+		As this can become a source of problems for long GIFs,
+		you can provide an array to be populated with single-frame sprites
+		for individual frames.
+		
+		When doing so, you will still get a sprite back from the calls,
+		but it will be the last frame of the GIF.
+	}
+	#[Gradual loading](gradual) {
+		If you don't want the game to freeze while adding a GIF,
+		you can opt for the `_start` versions of the functions
+	}
+}
+#[Functions]() {
+	#[sprite_add_gif(path, xorig, yorig, ?frame_delays, ?frame_sprites)->]() {
+		*path*\
+		Wherever to take your GIF from (should be accessible by the game).
+		
+		*xorig*, *yorig*\
+		Origin of the sprite, just like in the regular `sprite_add`.
+		
+		*frame_delays* (optional)\
+		If provided, per-frame timings will be added to this array
+		(see [frame delays](frame-delays)).
+		
+		*frame_sprites* (optional)\
+		If provided, each frame will be added to this array as a separate sprite
+		(see [frame delays](frame-delays)).
+		
+		Returns a [gif_reader] to work with.
+		
+		For example,
+		```gml
+		sprite = sprite_add_gif("cool.gif", 16, 16);
+		```
+	}
+	#[sprite_add_gif_buffer(buffer, xorig, yorig, ?frame_delays, ?frame_sprites)->]() {
+		Like [sprite_add_gif], but loads a GIF from a buffer instead.
+	}
+	---
+	#[sprite_add_gif_start(path, xorig, yorig, ?frame_delays, ?frame_sprites)->]() {
+		Like [sprite_add_gif], but uses [gradual loading](gradual)
+		and returns a [gif_reader].
+	}
+	#[sprite_add_gif_buffer_start(path, xorig, yorig, ?frame_delays, ?frame_sprites)->]() {
+		Like [sprite_add_gif],
+		but uses [gradual loading](gradual),
+		loads the GIF from a buffer,
+		and returns a [gif_reader].
+		
+		*Attention:* The buffer will-be used as-is and should not be touched/deleted
+		while the GIF is loading. You can destroy it after you call [finish()](gif_reader_finish).
+	}
+}
+```exec
+function flatn() {
+	var stack = DocMd.sectionStack;
+	var section = stack[stack.length - 1];
+	return render("*GM:S name*: `" + section.permalink + "`");
+}
+```
+#[Reader API](+gif_reader) {
+	[sprite_add_gif_start] and [sprite_add_gif_buffer_start] functions return you a
+	`gif_reader` struct (or array-thing in old GameMaker versions)
+	for [gradual loading](gradual).
+	
+	These have the following methods:
+	#[next()->](_) {
+		${flatn()}
+		
+		Does one step of the loading process
+		(that's reading a GIF section or adding a frame to the sprite).
+		
+		Returns whether there's still more work left to do.
+		
+		For example, what `sprite_add_gif_buffer` does is just about:
+		```gml
+		var reader = sprite_add_gif_buffer_start(buffer, 0, 0);
+		while (reader.next()) {}
+		var sprite = reader.finish();
+		```
+		Or, for old GameMaker versions:
+		```gml
+		var reader = sprite_add_gif_buffer_start(buffer, 0, 0);
+		while (gif_reader_next(reader)) {}
+		var sprite = gif_reader_finish(reader);
+		```
+	}
+	#[next_few(timeout_ms)->](_) {
+		${flatn()}
+		
+		Like [next](gif_reader_next), but does one or more steps
+		until a timeout (in milliseconds) is reached or there's nothing left to do.
+		
+		The function aborts _after_ a step so it may take longer than the requested interval.
+		
+		Returns whether there's still more work left to do.
+		
+		For example, if you wanted to freeze the game for roughly 100ms at the time,
+		you could do:
+		```gml
+		// Create
+		reader = sprite_add_gif_buffer("cool.gif", 0, 0);
+		sprite = -1;
+		
+		// Step
+		if (reader != undefined) {
+			if (reader.next_few(100)) {
+				// not done yet!
+			} else {
+				sprite = reader.finish();
+				reader = undefined;
+			}
+		}
+		```
+		Or, for old GameMaker versions:
+		```gml
+		// Create
+		reader = sprite_add_gif_buffer("cool.gif", 0, 0);
+		sprite = -1;
+		
+		// Step
+		if (reader != undefined) {
+			if (gif_reader_next_few(reader, 100)) {
+				// not done yet!
+			} else {
+				sprite = gif_reader_finish(reader);
+				reader = undefined;
+			}
+		}
+		```
+	}
+	#[finish()->](_) {
+		${flatn()}
+		
+		This function frees up any intermediate structures used by the reader
+		and returns the final sprite.
+		
+		It can also be called amid loading to abort the process.
+	}
+	Info:
+	#[get_last_action_name()->](_) {
+		${flatn()}
+		
+		Returns the name of the action that was done during the last
+		[next()](gif_reader_next) call.
+		
+		This is mostly useful if you're trying to figure out what takes the longest.
+		
+		#[get_last_action()->](_) {
+			${flatn()}
+			
+			Like above, but returns the _index_ of the action.
+			
+			For possible values, see `gif_reader_action` enum.
+		}
+		#[gif_reader_get_action_name(action)]() {
+			Returns a name for an action returned by [gif_reader_get_last_action].
+		}
+	}
+	#[get_frame_count()->](_) {
+		${flatn()}
+		
+		Returns the number of frames that are "complete" and ready to use.
+	}
+	#[get_sprite()->](_) {
+		${flatn()}
+		
+		Returns the reader's sprite, which might not have all the frames yet,
+		but can still be drawn if you need to show something as soon as possible.
+		
+		If [frame sprites](frame-sprites) are enabled, this is the _latest_ frame.
+		
+		May return `-1` if the GIF is invalid or we haven't completed a single frame yet.
+	}
+}
